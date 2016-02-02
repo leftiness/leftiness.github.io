@@ -1,0 +1,11 @@
+body,
+article.card {
+  margin: auto;
+  padding: 10px;
+}
+@media (min-width: 720px) {
+  body,
+  article.card {
+    padding: 30px;
+  }
+}

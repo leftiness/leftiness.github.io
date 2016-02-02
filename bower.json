@@ -1,0 +1,19 @@
+{
+	"name": "leftiness.github.io",
+	"description": "This is a page!",
+	"authors": [
+		"Brandon Parmenter <leftiness@gmail.com>"
+	],
+	"license": "MIT",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"dependencies": {
+		"mithril": "~0.2.1",
+		"picnic": "~5.0.1"
+	}
+}

@@ -1,17 +1,19 @@
 "use strict"
 
 m = require "mithril"
+infect = require "infect"
 
-TodoModel = require "./TodoModel.coffee"
-TodoListModel = require "./TodoListModel.coffee"
-
-class TodoViewModel
-	constructor: ->
-		@list = new TodoListModel()
+class Klass
+	constructor: (@$TodoModel, @$TodoListModel) ->
+		@list = new @$TodoListModel()
 		@description = m.prop ""
 	add: =>
 		if @description()
-			@list.push new TodoModel description: @description()
+			@list.push new @$TodoModel description: @description()
 			@description ""
+
+TodoViewModel = infect.func Klass
+
+TodoViewModel.$infect = [ "TodoModel, TodoViewModel" ]
 
 module.exports = TodoViewModel

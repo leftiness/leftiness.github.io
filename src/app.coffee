@@ -1,9 +1,11 @@
 "use strict"
 
 m = require "mithril"
+infect = require "infect"
 
-todo = require "./modules/todo/TodoModule.coffee"
+infect.set "Module", require "./Module.coffee"
 
 m.route.mode = "search"
+
 m.route document, "/todo",
- "/todo": todo
+  "/todo": require "./modules/todo/TodoModule.coffee"

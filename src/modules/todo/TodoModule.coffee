@@ -1,9 +1,10 @@
-m = require "mithril"
+infect = require "infect"
 
-TodoViewModel = require "./TodoViewModel.coffee"
-TodoView = require "./TodoView.coffee"
+Module = require "../../Module.coffee"
 
-vm = new TodoViewModel()
-view = new TodoView vm
-
-module.exports = view: view.create
+module.exports = new Module()
+	.viewModel "TodoViewModel", require "./TodoViewModel.coffee"
+	.view "TodoView", require "./TodoView.coffee"
+	.infect "TodoModel", require "./TodoModel.coffee"
+	.infect "TodoListModel", require "./TodoListModel.coffee"
+	.init()

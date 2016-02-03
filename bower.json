@@ -14,6 +14,7 @@
 	],
 	"dependencies": {
 		"mithril": "~0.2.1",
-		"picnic": "~5.0.1"
+		"picnic": "~5.0.1",
+		"infect": "^0.4.6"
 	}
 }

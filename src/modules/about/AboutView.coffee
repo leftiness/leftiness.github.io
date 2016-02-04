@@ -1,9 +1,10 @@
 "use strict"
 
 m = require "mithril"
+infect = require "infect"
 
-class AboutView
-	constructor: (vm) ->
+class Klass
+	constructor: (vm, $NavigationModule) ->
 		return ->
 			m "html",
 				m "head",
@@ -12,6 +13,7 @@ class AboutView
 					m "link[rel=stylesheet][href='dist/plugins.min.css']"
 					m "link[rel=stylesheet][href='dist/index.css']"
 				m "body",
+					m $NavigationModule
 					m "article[class=card row two-third]",
 						m "header",
 							m "h2", "About"
@@ -20,5 +22,9 @@ class AboutView
 						great demo was created by Brandon. Thank you for reading this text.
 						"""
 						m "button", "Great!"
+
+AboutView = infect.func Klass
+
+AboutView.$infect = [ "NavigationModule" ]
 
 module.exports = AboutView

@@ -1,9 +1,10 @@
 "use strict"
 
 m = require "mithril"
+infect = require "infect"
 
-class TodoView
-	constructor: (vm) ->
+class Klass
+	constructor: (vm, $NavigationModule) ->
 		return ->
 			m "html",
 				m "head",
@@ -12,6 +13,7 @@ class TodoView
 					m "link[rel=stylesheet][href='dist/plugins.min.css']"
 					m "link[rel=stylesheet][href='dist/index.css']"
 				m "body",
+					m $NavigationModule
 					m "article[class=card row two-third]",
 						m "header",
 							m "h2", "Todo"
@@ -29,5 +31,9 @@ class TodoView
 											onclick: m.withAttr "checked", task.done
 											checked: task.done()
 										m "span[class=checkable]", style, task.description()
+
+TodoView = infect.func Klass
+
+TodoView.$infect = [ "NavigationModule" ]
 
 module.exports = TodoView

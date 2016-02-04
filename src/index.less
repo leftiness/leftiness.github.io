@@ -1,11 +1,21 @@
-body, article.card {
-	margin: auto;
+@nav-height: 50px;
+
+body {
+	padding: 10px;
+}
+
+article.card {
+	margin-top: @nav-height + 10px;
+	margin-left: auto;
+	margin-right: auto;
 	padding: 10px;
 	@media (min-width: 720px) {
+		margin-top: @nav-height + 30px;
 		padding: 30px;
 	}
 }
 
 nav {
+	height: @nav-height;
 	padding: 10px;
 }

@@ -16,7 +16,9 @@ class Klass
 						great module because it tells you all about the great demo. The
 						great demo was created by Brandon. Thank you for reading this text.
 					"""
-					m "button", "Great!"
+					m "footer",
+						m "button[class=row]", "Great!"
+
 
 AboutView = infect.func Klass
 

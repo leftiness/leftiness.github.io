@@ -1,5 +1,3 @@
-infect = require "infect"
-
 Module = require "../../Module.coffee"
 
 module.exports = new Module()

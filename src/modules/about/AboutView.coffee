@@ -11,7 +11,7 @@ class Klass
 				m "article[class=card row two-third]",
 					m "header",
 						m "h2", "About"
-					m "div", """
+					m "div[class=content]", """
 						Hello. Welcome to this great module. It is a very
 						great module because it tells you all about the great demo. The
 						great demo was created by Brandon. Thank you for reading this text.

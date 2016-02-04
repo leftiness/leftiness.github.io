@@ -2,21 +2,17 @@ infect = require "infect"
 
 class Module
 	view: (@viewName, @viewClass) =>
-		infect.set @viewName, @viewClass
-		name = !!@viewName
-		klass = !!@viewClass
-		if !name and !klass then return @view
-		else if !name or !klass then throw new Error "Missing argument"
-		else return this
+		if !!@viewName and !!@viewClass
+			infect.set @viewName, @viewClass
+			return this
+		else return @view
 	viewModel: (@viewModelName, @viewModelClass) =>
-		infect.set @viewModelName, @viewModelClass
-		name = !!@viewModelName
-		klass = !!@viewModelClass
-		if !name and !klass then return @viewModel
-		else if !name or !klass then throw new Error "Missing argument"
-		else return this
+		if !!@viewModelName and !!@viewModelClass
+			infect.set @viewModelName, @viewModelClass
+			return this
+		else return @viewModel
 	init: =>
-		@viewModel = new @viewModelClass()
+		@viewModel = new @viewModelClass?()
 		@view = new @viewClass @viewModel
 		return this
 	infect: (name, infectable) =>

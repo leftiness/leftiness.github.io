@@ -254,39 +254,29 @@ Module = (function() {
   }
 
   Module.prototype.view = function(viewName, viewClass) {
-    var klass, name;
     this.viewName = viewName;
     this.viewClass = viewClass;
-    infect.set(this.viewName, this.viewClass);
-    name = !!this.viewName;
-    klass = !!this.viewClass;
-    if (!name && !klass) {
-      return this.view;
-    } else if (!name || !klass) {
-      throw new Error("Missing argument");
-    } else {
+    if (!!this.viewName && !!this.viewClass) {
+      infect.set(this.viewName, this.viewClass);
       return this;
+    } else {
+      return this.view;
     }
   };
 
   Module.prototype.viewModel = function(viewModelName, viewModelClass) {
-    var klass, name;
     this.viewModelName = viewModelName;
     this.viewModelClass = viewModelClass;
-    infect.set(this.viewModelName, this.viewModelClass);
-    name = !!this.viewModelName;
-    klass = !!this.viewModelClass;
-    if (!name && !klass) {
-      return this.viewModel;
-    } else if (!name || !klass) {
-      throw new Error("Missing argument");
-    } else {
+    if (!!this.viewModelName && !!this.viewModelClass) {
+      infect.set(this.viewModelName, this.viewModelClass);
       return this;
+    } else {
+      return this.viewModel;
     }
   };
 
   Module.prototype.init = function() {
-    this.viewModel = new this.viewModelClass();
+    this.viewModel = typeof this.viewModelClass === "function" ? new this.viewModelClass() : void 0;
     this.view = new this.viewClass(this.viewModel);
     return this;
   };
@@ -305,29 +295,109 @@ module.exports = Module;
 
 },{"./..\\bower_components\\infect\\infect.js":1}],4:[function(require,module,exports){
 "use strict";
-var infect, m;
+var comp, components, infect, m, name,
+  hasProp = {}.hasOwnProperty;
 
 m = require("./..\\bower_components\\mithril\\mithril.min.js");
 
 infect = require("./..\\bower_components\\infect\\infect.js");
 
-infect.set("Module", require("./Module.coffee"));
+components = require("./components/index.coffee");
+
+for (name in components) {
+  if (!hasProp.call(components, name)) continue;
+  comp = components[name];
+  infect.set(name, comp);
+}
 
 m.route.mode = "search";
 
-m.route(document, "/todo", {
-  "/todo": require("./modules/todo/TodoModule.coffee")
+m.route(document.body, "/todo", {
+  "/todo": require("./modules/todo/TodoModule.coffee"),
+  "/about": require("./modules/about/AboutModule.coffee")
 });
 
 
-},{"./..\\bower_components\\infect\\infect.js":1,"./..\\bower_components\\mithril\\mithril.min.js":2,"./Module.coffee":3,"./modules/todo/TodoModule.coffee":7}],5:[function(require,module,exports){
+},{"./..\\bower_components\\infect\\infect.js":1,"./..\\bower_components\\mithril\\mithril.min.js":2,"./components/index.coffee":5,"./modules/about/AboutModule.coffee":8,"./modules/todo/TodoModule.coffee":12}],5:[function(require,module,exports){
+module.exports = {
+  NavigationModule: require("./navigation/NavigationModule.coffee")
+};
+
+
+},{"./navigation/NavigationModule.coffee":6}],6:[function(require,module,exports){
+var Module;
+
+Module = require("../../Module.coffee");
+
+module.exports = new Module().view("NavigationView", require("./NavigationView.coffee")).init();
+
+
+},{"../../Module.coffee":3,"./NavigationView.coffee":7}],7:[function(require,module,exports){
+"use strict";
+var NavigationView, m;
+
+m = require("./..\\..\\..\\bower_components\\mithril\\mithril.min.js");
+
+NavigationView = (function() {
+  function NavigationView(vm) {
+    return function() {
+      return m("nav", m("a[href='#'][class=brand]", "Demo"), m("input[id=bmenub][type=checkbox][class=show]"), m("label[for=bmenub][class=pseudo button toggle burger]", "Menu"), m("div[class=menu]", m("a[href='/todo'][class=pseudo button]", {
+        config: m.route
+      }, "Todo"), m("a[href='/about'][class=pseudo button]", {
+        config: m.route
+      }, "About")));
+    };
+  }
+
+  return NavigationView;
+
+})();
+
+module.exports = NavigationView;
+
+
+},{"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],8:[function(require,module,exports){
+var Module;
+
+Module = require("../../Module.coffee");
+
+module.exports = new Module().view("AboutView", require("./AboutView.coffee")).init();
+
+
+},{"../../Module.coffee":3,"./AboutView.coffee":9}],9:[function(require,module,exports){
+"use strict";
+var AboutView, Klass, infect, m;
+
+m = require("./..\\..\\..\\bower_components\\mithril\\mithril.min.js");
+
+infect = require("./..\\..\\..\\bower_components\\infect\\infect.js");
+
+Klass = (function() {
+  function Klass(vm, $NavigationModule) {
+    return function() {
+      return m("div", m($NavigationModule), m("article[class=card row two-third]", m("header", m("h2", "About")), m("div[class=content]", "Hello. Welcome to this great module. It is a very\ngreat module because it tells you all about the great demo. The\ngreat demo was created by Brandon. Thank you for reading this text."), m("footer", m("button[class=row]", "Great!"))));
+    };
+  }
+
+  return Klass;
+
+})();
+
+AboutView = infect.func(Klass);
+
+AboutView.$infect = ["NavigationModule"];
+
+module.exports = AboutView;
+
+
+},{"./..\\..\\..\\bower_components\\infect\\infect.js":1,"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],10:[function(require,module,exports){
 "use strict";
 var TodoListModel;
 
 module.exports = TodoListModel = Array;
 
 
-},{}],6:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 var TodoModel, m;
 
@@ -347,29 +417,29 @@ TodoModel = (function() {
 module.exports = TodoModel;
 
 
-},{"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],7:[function(require,module,exports){
-var Module, infect;
-
-infect = require("./..\\..\\..\\bower_components\\infect\\infect.js");
+},{"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],12:[function(require,module,exports){
+var Module;
 
 Module = require("../../Module.coffee");
 
 module.exports = new Module().viewModel("TodoViewModel", require("./TodoViewModel.coffee")).view("TodoView", require("./TodoView.coffee")).infect("TodoModel", require("./TodoModel.coffee")).infect("TodoListModel", require("./TodoListModel.coffee")).init();
 
 
-},{"../../Module.coffee":3,"./..\\..\\..\\bower_components\\infect\\infect.js":1,"./TodoListModel.coffee":5,"./TodoModel.coffee":6,"./TodoView.coffee":8,"./TodoViewModel.coffee":9}],8:[function(require,module,exports){
+},{"../../Module.coffee":3,"./TodoListModel.coffee":10,"./TodoModel.coffee":11,"./TodoView.coffee":13,"./TodoViewModel.coffee":14}],13:[function(require,module,exports){
 "use strict";
-var TodoView, m;
+var Klass, TodoView, infect, m;
 
 m = require("./..\\..\\..\\bower_components\\mithril\\mithril.min.js");
 
-TodoView = (function() {
-  function TodoView(vm) {
+infect = require("./..\\..\\..\\bower_components\\infect\\infect.js");
+
+Klass = (function() {
+  function Klass(vm, $NavigationModule) {
     return function() {
-      return m("html", m("head", m("meta[name=viewport][content='width=device-width'][maximum-scale=1.0]"), m("link[rel=stylesheet][href='dist/picnic.min.css']"), m("link[rel=stylesheet][href='dist/plugins.min.css']"), m("link[rel=stylesheet][href='dist/index.css']")), m("body", m("article[class=card row two-third]", m("header", m("h2", "Todo")), m("input", {
+      return m("div", m($NavigationModule), m("article[class=card row two-third]", m("header", m("h2", "Todo")), m("div[class=content]", m("input", {
         onchange: m.withAttr("value", vm.description),
         value: vm.description()
-      }), m("button", {
+      }), m("button[class=row]", {
         onclick: vm.add
       }, "Add"), m("div", vm.list.map(function(task, index) {
         var decor, style;
@@ -387,14 +457,18 @@ TodoView = (function() {
     };
   }
 
-  return TodoView;
+  return Klass;
 
 })();
+
+TodoView = infect.func(Klass);
+
+TodoView.$infect = ["NavigationModule"];
 
 module.exports = TodoView;
 
 
-},{"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],9:[function(require,module,exports){
+},{"./..\\..\\..\\bower_components\\infect\\infect.js":1,"./..\\..\\..\\bower_components\\mithril\\mithril.min.js":2}],14:[function(require,module,exports){
 "use strict";
 var Klass, TodoViewModel, infect, m,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };

@@ -9,3 +9,4 @@ m.route.mode = "search"
 
 m.route document, "/todo",
   "/todo": require "./modules/todo/TodoModule.coffee"
+  "/about": require "./modules/about/AboutModule.coffee"

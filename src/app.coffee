@@ -9,6 +9,6 @@ infect.set name, comp for own name, comp of components
 
 m.route.mode = "search"
 
-m.route document, "/todo",
+m.route document.body, "/todo",
   "/todo": require "./modules/todo/TodoModule.coffee"
   "/about": require "./modules/about/AboutModule.coffee"

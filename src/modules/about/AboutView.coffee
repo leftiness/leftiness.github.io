@@ -7,7 +7,7 @@ class Klass
 	constructor: (vm, $NavigationModule) ->
 		return ->
 			m "div",
-				m $NavigationModule
+				m.component $NavigationModule
 				m "article[class=card row two-third]",
 					m "header",
 						m "h2", "About"

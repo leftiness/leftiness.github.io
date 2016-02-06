@@ -2,7 +2,6 @@
 NODE='./node_modules/'
 DEPS[0]='infect/infect.js'
 DEPS[1]='mithril/mithril.js'
-DEPS[2]='mithril.animate/dist/mithril.animate.js'
 EXCLUDE=''
 
 for each in "${DEPS[@]}"

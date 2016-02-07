@@ -4,16 +4,16 @@ m = require "mithril"
 infect = require "infect"
 
 class Klass
-	constructor: (@$TodoModel, @$TodoListModel) ->
-		@list = new @$TodoListModel()
+	constructor: (@Todo, @TodoList) ->
+		@list = new @TodoList()
 		@description = m.prop ""
 	add: =>
 		if @description()
-			@list.push new @$TodoModel description: @description()
+			@list.push new @Todo description: @description()
 			@description ""
 
 TodoViewModel = infect.func Klass
 
-TodoViewModel.$infect = [ "TodoModel, TodoViewModel" ]
+TodoViewModel.$infect = [ "TodoModel", "TodoListModel" ]
 
 module.exports = TodoViewModel

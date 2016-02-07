@@ -4,11 +4,11 @@ m = require "mithril"
 infect = require "infect"
 
 class Klass
-	constructor: (vm, $NavigationModule) ->
+	constructor: (vm, Nav) ->
 		return ->
 			m "div", do ->
 				return []
-				.concat m.component $NavigationModule
+				.concat m.component Nav
 				.concat m "article.card.row.two-third", do ->
 					return []
 					.concat m "header",

@@ -1,30 +1,33 @@
 transition = require "mithril-transition"
+m = require "mithril"
+
+doTransition = (element, klass, fn) ->
+	events =
+		"animation": "animationend"
+		"webkitAnimation": "webkitAnimationEnd"
+		"mozAnimation": "animationend"
+		"msAnimation": "msAnimationEnd"
+		"oanimation": "oanimationEnd"
+	for own key, value of events
+		if element.style[key] is undefined then continue
+		element.classList.add klass
+		handler = (event) ->
+			event.target.removeEventListener event.type, handler
+			fn()
+			return
+		element.addEventListener value, handler
+		break
+	return
 
 class Klass
-	create: (intro, outro) ->
-		return transition
-			anim: (lastEl, newEl, dir, cbLast, cbNew) ->
-				events = [
-					"webkitAnimationEnd"
-					"mozAnimationEnd"
-					"MSAnimationEnd"
-					"oanimationend"
-					"animationend"
-				]
-				events.map (event) ->
-					lastEl.addEventListener event, handler = (e) ->
-						e.target.removeEventListener e.type, handler
-						cbLast()
-						return
-					newEl.addEventListener event, handler = (e) ->
-						e.target.removeEventListener e.type, handler
-						newEl.classList.remove intro
-						cbNew()
-						return
-					return
-				# TODO If dir isnt "next" then set different forward/backward animations
-				lastEl.classList.add outro
-				newEl.classList.add intro
-				return
+	intro: => return (element, isInitialized, context) ->
+		if isInitialized then return
+		doTransition element, "intro", -> element.classList.remove "intro"
+	outro: => return (element, isInitialized, context) ->
+		if isInitialized then return
+		element.onclick = (e) ->
+			e.preventDefault()
+			el = document.getElementById "transition"
+			doTransition el, "outro", -> m.route element.getAttribute "href"
 
 module.exports = new Klass()

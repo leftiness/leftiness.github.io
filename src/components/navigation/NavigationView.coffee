@@ -1,9 +1,10 @@
 "use strict"
 
 m = require "mithril"
+infect = require "infect"
 
-class NavigationView
-	constructor: (vm) ->
+class Klass
+	constructor: (vm, Trans) ->
 		return ->
 			m "nav", do ->
 				return []
@@ -12,7 +13,11 @@ class NavigationView
 				.concat m "label.pseudo.button.toggle.burger[for=bmenub]", "Menu"
 				.concat m "div.menu", do ->
 					return []
-					.concat m "a.pseudo.button[href='/todo']", config: m.route, "Todo"
-					.concat m "a.pseudo.button[href='/about']", config: m.route, "About"
+					.concat m "a.pseudo.button[href='/todo']", config: Trans.outro(), "Todo"
+					.concat m "a.pseudo.button[href='/about']", config: Trans.outro(), "About"
+
+NavigationView = infect.func Klass
+
+NavigationView.$infect = [ "TransitionFactory" ]
 
 module.exports = NavigationView

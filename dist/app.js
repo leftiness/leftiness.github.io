@@ -83,18 +83,16 @@ m.route(document.body, "/todo", {
 });
 
 
-},{"./common/index.coffee":3,"./components/index.coffee":5,"./modules/about/AboutModule.coffee":8,"./modules/todo/TodoModule.coffee":12,"infect":undefined,"mithril":undefined}],3:[function(require,module,exports){
+},{"./common/index.coffee":3,"./components/index.coffee":5,"./modules/about/AboutModule.coffee":10,"./modules/todo/TodoModule.coffee":14,"infect":undefined,"mithril":undefined}],3:[function(require,module,exports){
 module.exports = {
   TransitionFactory: require("./services/TransitionFactory.coffee")
 };
 
 
 },{"./services/TransitionFactory.coffee":4}],4:[function(require,module,exports){
-var Klass, doTransition, m, transition,
+var Klass, doTransition, m,
   hasProp = {}.hasOwnProperty,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-transition = require("mithril-transition");
 
 m = require("mithril");
 
@@ -125,6 +123,7 @@ doTransition = function(element, klass, fn) {
 
 Klass = (function() {
   function Klass() {
+    this.swoosh = bind(this.swoosh, this);
     this.outro = bind(this.outro, this);
     this.intro = bind(this.intro, this);
   }
@@ -156,6 +155,17 @@ Klass = (function() {
     };
   };
 
+  Klass.prototype.swoosh = function() {
+    return function(element, isInitialized, context) {
+      if (isInitialized) {
+        return;
+      }
+      return doTransition(element, "swoosh", function() {
+        return element.parentNode.removeChild(element);
+      });
+    };
+  };
+
   return Klass;
 
 })();
@@ -163,13 +173,14 @@ Klass = (function() {
 module.exports = new Klass();
 
 
-},{"mithril":undefined,"mithril-transition":undefined}],5:[function(require,module,exports){
+},{"mithril":undefined}],5:[function(require,module,exports){
 module.exports = {
-  NavigationModule: require("./navigation/NavigationModule.coffee")
+  NavigationModule: require("./navigation/NavigationModule.coffee"),
+  SwooshModule: require("./swoosh/SwooshModule.coffee")
 };
 
 
-},{"./navigation/NavigationModule.coffee":6}],6:[function(require,module,exports){
+},{"./navigation/NavigationModule.coffee":6,"./swoosh/SwooshModule.coffee":8}],6:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -216,10 +227,55 @@ var Module;
 
 Module = require("../../Module.coffee");
 
+module.exports = new Module().view("SwooshView", require("./SwooshView.coffee")).init();
+
+
+},{"../../Module.coffee":1,"./SwooshView.coffee":9}],9:[function(require,module,exports){
+"use strict";
+var Klass, SwooshView, infect, m;
+
+m = require("mithril");
+
+infect = require("infect");
+
+Klass = (function() {
+  function Klass(vm, Trans) {
+    return function() {
+      var opts;
+      opts = {
+        style: {
+          "width": "100%",
+          "height": "100px",
+          "background-color": "#7FDBFF",
+          "position": "absolute",
+          "top": "200px"
+        },
+        config: Trans.swoosh()
+      };
+      return m("div", opts);
+    };
+  }
+
+  return Klass;
+
+})();
+
+SwooshView = infect.func(Klass);
+
+SwooshView.$infect = ["TransitionFactory"];
+
+module.exports = SwooshView;
+
+
+},{"infect":undefined,"mithril":undefined}],10:[function(require,module,exports){
+var Module;
+
+Module = require("../../Module.coffee");
+
 module.exports = new Module().view("AboutView", require("./AboutView.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./AboutView.coffee":9}],9:[function(require,module,exports){
+},{"../../Module.coffee":1,"./AboutView.coffee":11}],11:[function(require,module,exports){
 "use strict";
 var AboutView, Klass, infect, m;
 
@@ -228,10 +284,10 @@ m = require("mithril");
 infect = require("infect");
 
 Klass = (function() {
-  function Klass(vm, Nav, Trans) {
+  function Klass(vm, Nav, Swoosh, Trans) {
     return function() {
       return m("div", (function() {
-        return [].concat(m.component(Nav)).concat(m("#transition", {
+        return [].concat(m.component(Nav)).concat(m.component(Swoosh)).concat(m("#transition", {
           key: m.route(),
           config: Trans.intro()
         }, m("article.card.row.two-third", (function() {
@@ -247,19 +303,19 @@ Klass = (function() {
 
 AboutView = infect.func(Klass);
 
-AboutView.$infect = ["NavigationModule", "TransitionFactory"];
+AboutView.$infect = ["NavigationModule", "SwooshModule", "TransitionFactory"];
 
 module.exports = AboutView;
 
 
-},{"infect":undefined,"mithril":undefined}],10:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],12:[function(require,module,exports){
 "use strict";
 var TodoListModel;
 
 module.exports = TodoListModel = Array;
 
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 var TodoModel, m;
 
@@ -279,7 +335,7 @@ TodoModel = (function() {
 module.exports = TodoModel;
 
 
-},{"mithril":undefined}],12:[function(require,module,exports){
+},{"mithril":undefined}],14:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -287,7 +343,7 @@ Module = require("../../Module.coffee");
 module.exports = new Module().viewModel("TodoViewModel", require("./TodoViewModel.coffee")).view("TodoView", require("./TodoView.coffee")).infect("TodoModel", require("./TodoModel.coffee")).infect("TodoListModel", require("./TodoListModel.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./TodoListModel.coffee":10,"./TodoModel.coffee":11,"./TodoView.coffee":13,"./TodoViewModel.coffee":14}],13:[function(require,module,exports){
+},{"../../Module.coffee":1,"./TodoListModel.coffee":12,"./TodoModel.coffee":13,"./TodoView.coffee":15,"./TodoViewModel.coffee":16}],15:[function(require,module,exports){
 "use strict";
 var Klass, TodoView, infect, m;
 
@@ -296,10 +352,10 @@ m = require("mithril");
 infect = require("infect");
 
 Klass = (function() {
-  function Klass(vm, Nav, Trans) {
+  function Klass(vm, Nav, Swoosh, Trans) {
     return function() {
       return m("div", (function() {
-        return [].concat(m.component(Nav)).concat(m("#transition", {
+        return [].concat(m.component(Nav)).concat(m.component(Swoosh)).concat(m("#transition", {
           key: m.route(),
           config: Trans.intro()
         }, m("article.card.row.two-third", (function() {
@@ -336,12 +392,12 @@ Klass = (function() {
 
 TodoView = infect.func(Klass);
 
-TodoView.$infect = ["NavigationModule", "TransitionFactory"];
+TodoView.$infect = ["NavigationModule", "SwooshModule", "TransitionFactory"];
 
 module.exports = TodoView;
 
 
-},{"infect":undefined,"mithril":undefined}],14:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],16:[function(require,module,exports){
 "use strict";
 var Klass, TodoViewModel, infect, m,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };

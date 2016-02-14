@@ -28,5 +28,8 @@ class Klass
 			e.preventDefault()
 			el = document.getElementById "transition"
 			doTransition el, "outro", -> m.route element.getAttribute "href"
+	swoosh: => return (element, isInitialized, context) ->
+		if isInitialized then return
+		doTransition element, "swoosh", -> element.parentNode.removeChild element
 
 module.exports = new Klass()

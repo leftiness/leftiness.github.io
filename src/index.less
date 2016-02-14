@@ -34,6 +34,11 @@ nav {
 	animation: moveFromBottomFade .2s ease both;
 }
 
+.swoosh {
+	-webkit-animation: swoosh .3s ease-in both;
+	animation: swoosh .3s ease-in both;
+}
+
 @keyframes scaleDown {
 	to {
 		opacity: 0;
@@ -53,5 +58,16 @@ nav {
 		opacity: 0.3;
 		-webkit-transform: translateY(100%);
 		transform: translateY(100%);
+	}
+}
+
+@keyframes swoosh {
+	from {
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+	}
+	to {
+		-webkit-transform: translateX(-100%);
+		transform: translateX(-100%);
 	}
 }

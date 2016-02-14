@@ -4,10 +4,11 @@ m = require "mithril"
 infect = require "infect"
 
 class Klass
-	constructor: (vm, Nav, Trans) -> return ->
+	constructor: (vm, Nav, Swoosh, Trans) -> return ->
 		m "div", do ->
 			return []
 			.concat m.component Nav
+			.concat m.component Swoosh
 			.concat m "#transition", { key: m.route(), config: Trans.intro() },
 				m "article.card.row.two-third", do ->
 					return []
@@ -23,6 +24,6 @@ class Klass
 
 AboutView = infect.func Klass
 
-AboutView.$infect = [ "NavigationModule", "TransitionFactory" ]
+AboutView.$infect = [ "NavigationModule", "SwooshModule", "TransitionFactory" ]
 
 module.exports = AboutView

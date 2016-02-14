@@ -2,7 +2,6 @@
 NODE='./node_modules/'
 DEPS[0]='picnic/releases/picnic.min.css'
 DEPS[1]='picnic/releases/plugins.min.css'
-DEPS[2]='mithril-transition/dist/index.css'
 VENDOR=''
 
 for each in "${DEPS[@]}"

@@ -1,4 +1,3 @@
-transition = require "mithril-transition"
 m = require "mithril"
 
 doTransition = (element, klass, fn) ->

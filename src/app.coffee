@@ -3,11 +3,8 @@
 m = require "mithril"
 infect = require "infect"
 
-components = require "./components/index.coffee"
-commons = require "./common/index.coffee"
-
-infect.set name, comp for own name, comp of components
-infect.set name, comp for own name, comp of commons
+infect.set name, comp for own name, comp of require "./common/index.coffee"
+infect.set name, comp for own name, comp of require "./components/index.coffee"
 
 m.route.mode = "search"
 

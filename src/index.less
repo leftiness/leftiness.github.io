@@ -25,29 +25,23 @@ nav {
 }
 
 .outro {
-	-webkit-animation: moveToLeft .5s ease both;
-	animation: moveToLeft .5s ease both;
+	-webkit-animation: scaleDown .2s ease both;
+	animation: scaleDown .2s ease both;
 }
 
 .intro {
-	-webkit-animation: moveFromRight .3s ease both;
-	animation: moveFromRight .3s ease both;
+	-webkit-animation: moveFromBottomFade .2s ease both;
+	animation: moveFromBottomFade .2s ease both;
 }
 
-@-webkit-keyframes moveToLeft {
-	from { }
-	to { -webkit-transform: translateX(-100%); }
+@keyframes scaleDown {
+	to { opacity: 0; transform: scale(.8); }
 }
 
-@keyframes moveToLeft {
-	from { }
-	to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
+@-webkit-keyframes moveFromBottomFade {
+	from { opacity: 0.3; -webkit-transform: translateY(100%); }
 }
 
-@-webkit-keyframes moveFromRight {
-	from { -webkit-transform: translateX(100%); }
-}
-
-@keyframes moveFromRight {
-	from { -webkit-transform: translateX(100%); transform: translateX(100%); }
+@keyframes moveFromBottomFade {
+	from { opacity: 0.3; -webkit-transform: translateY(100%); transform: translateY(100%); }
 }

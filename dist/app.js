@@ -54,26 +54,24 @@ module.exports = Module;
 
 },{"infect":undefined}],2:[function(require,module,exports){
 "use strict";
-var commons, comp, components, infect, m, name,
+var comp, infect, m, name, ref, ref1,
   hasProp = {}.hasOwnProperty;
 
 m = require("mithril");
 
 infect = require("infect");
 
-components = require("./components/index.coffee");
-
-commons = require("./common/index.coffee");
-
-for (name in components) {
-  if (!hasProp.call(components, name)) continue;
-  comp = components[name];
+ref = require("./common/index.coffee");
+for (name in ref) {
+  if (!hasProp.call(ref, name)) continue;
+  comp = ref[name];
   infect.set(name, comp);
 }
 
-for (name in commons) {
-  if (!hasProp.call(commons, name)) continue;
-  comp = commons[name];
+ref1 = require("./components/index.coffee");
+for (name in ref1) {
+  if (!hasProp.call(ref1, name)) continue;
+  comp = ref1[name];
   infect.set(name, comp);
 }
 
@@ -92,34 +90,70 @@ module.exports = {
 
 
 },{"./services/TransitionFactory.coffee":4}],4:[function(require,module,exports){
-var Klass, transition;
+var Klass, doTransition, m, transition,
+  hasProp = {}.hasOwnProperty,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 transition = require("mithril-transition");
 
-Klass = (function() {
-  function Klass() {}
+m = require("mithril");
 
-  Klass.prototype.create = function(intro, outro) {
-    return transition({
-      anim: function(lastEl, newEl, dir, cbLast, cbNew) {
-        var events;
-        events = ["webkitAnimationEnd", "mozAnimationEnd", "MSAnimationEnd", "oanimationend", "animationend"];
-        events.map(function(event) {
-          var handler;
-          lastEl.addEventListener(event, handler = function(e) {
-            e.target.removeEventListener(e.type, handler);
-            cbLast();
-          });
-          newEl.addEventListener(event, handler = function(e) {
-            e.target.removeEventListener(e.type, handler);
-            newEl.classList.remove(intro);
-            cbNew();
-          });
-        });
-        lastEl.classList.add(outro);
-        newEl.classList.add(intro);
+doTransition = function(element, klass, fn) {
+  var events, handler, key, value;
+  events = {
+    "animation": "animationend",
+    "webkitAnimation": "webkitAnimationEnd",
+    "mozAnimation": "animationend",
+    "msAnimation": "msAnimationEnd",
+    "oanimation": "oanimationEnd"
+  };
+  for (key in events) {
+    if (!hasProp.call(events, key)) continue;
+    value = events[key];
+    if (element.style[key] === void 0) {
+      continue;
+    }
+    element.classList.add(klass);
+    handler = function(event) {
+      event.target.removeEventListener(event.type, handler);
+      fn();
+    };
+    element.addEventListener(value, handler);
+    break;
+  }
+};
+
+Klass = (function() {
+  function Klass() {
+    this.outro = bind(this.outro, this);
+    this.intro = bind(this.intro, this);
+  }
+
+  Klass.prototype.intro = function() {
+    return function(element, isInitialized, context) {
+      if (isInitialized) {
+        return;
       }
-    });
+      return doTransition(element, "intro", function() {
+        return element.classList.remove("intro");
+      });
+    };
+  };
+
+  Klass.prototype.outro = function() {
+    return function(element, isInitialized, context) {
+      if (isInitialized) {
+        return;
+      }
+      return element.onclick = function(e) {
+        var el;
+        e.preventDefault();
+        el = document.getElementById("transition");
+        return doTransition(el, "outro", function() {
+          return m.route(element.getAttribute("href"));
+        });
+      };
+    };
   };
 
   return Klass;
@@ -129,7 +163,7 @@ Klass = (function() {
 module.exports = new Klass();
 
 
-},{"mithril-transition":undefined}],5:[function(require,module,exports){
+},{"mithril":undefined,"mithril-transition":undefined}],5:[function(require,module,exports){
 module.exports = {
   NavigationModule: require("./navigation/NavigationModule.coffee")
 };
@@ -145,33 +179,39 @@ module.exports = new Module().view("NavigationView", require("./NavigationView.c
 
 },{"../../Module.coffee":1,"./NavigationView.coffee":7}],7:[function(require,module,exports){
 "use strict";
-var NavigationView, m;
+var Klass, NavigationView, infect, m;
 
 m = require("mithril");
 
-NavigationView = (function() {
-  function NavigationView(vm) {
+infect = require("infect");
+
+Klass = (function() {
+  function Klass(vm, Trans) {
     return function() {
       return m("nav", (function() {
         return [].concat(m("a[href='#'][class=brand]", "Demo")).concat(m("input#bmenub.show[type=checkbox]")).concat(m("label.pseudo.button.toggle.burger[for=bmenub]", "Menu")).concat(m("div.menu", (function() {
           return [].concat(m("a.pseudo.button[href='/todo']", {
-            config: m.route
+            config: Trans.outro()
           }, "Todo")).concat(m("a.pseudo.button[href='/about']", {
-            config: m.route
+            config: Trans.outro()
           }, "About"));
         })()));
       })());
     };
   }
 
-  return NavigationView;
+  return Klass;
 
 })();
+
+NavigationView = infect.func(Klass);
+
+NavigationView.$infect = ["TransitionFactory"];
 
 module.exports = NavigationView;
 
 
-},{"mithril":undefined}],8:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],8:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -189,16 +229,14 @@ infect = require("infect");
 
 Klass = (function() {
   function Klass(vm, Nav, Trans) {
-    var anim;
-    anim = Trans.create("pt-page-moveFromRight", "pt-page-moveToLeft");
     return function() {
       return m("div", (function() {
-        return [].concat(m.component(Nav)).concat(m("div", m(".pt-page", {
+        return [].concat(m.component(Nav)).concat(m("#transition", {
           key: m.route(),
-          config: anim
+          config: Trans.intro()
         }, m("article.card.row.two-third", (function() {
           return [].concat(m("header", m("h2", "About"))).concat(m("div.content", "Hello. Welcome to this great module. It is a very\ngreat module because it tells you all about the great demo. The\ngreat demo was created by Brandon. Thank you for reading this text.")).concat(m("footer", m("button.row", "Great!")));
-        })()))));
+        })())));
       })());
     };
   }
@@ -259,13 +297,11 @@ infect = require("infect");
 
 Klass = (function() {
   function Klass(vm, Nav, Trans) {
-    var anim;
-    anim = Trans.create("pt-page-moveFromRight", "pt-page-moveToLeft");
     return function() {
       return m("div", (function() {
-        return [].concat(m.component(Nav)).concat(m("div", m(".pt-page", {
+        return [].concat(m.component(Nav)).concat(m("#transition", {
           key: m.route(),
-          config: anim
+          config: Trans.intro()
         }, m("article.card.row.two-third", (function() {
           return [].concat(m("header", m("h2", "Todo"))).concat(m("div.content", (function() {
             return [].concat(m("input", {
@@ -289,7 +325,7 @@ Klass = (function() {
               })()));
             })));
           })()));
-        })()))));
+        })())));
       })());
     };
   }

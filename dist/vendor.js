@@ -237,6 +237,24 @@ Object.defineProperty(exports, '__esModule', {
     value: true
 });
 exports['default'] = transition;
+function addClass(elem, className) {
+    if (elem.classList) {
+        elem.classList.add(className);
+    } else {
+        elem.className += ' ' + className;
+    }
+    return elem;
+}
+
+function removeClass(elem, className) {
+    if (elem.classList) {
+        elem.classList.remove(className);
+    } else {
+        elem.className = elem.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+    }
+    return elem;
+}
+
 function persistHistory(persistHistoryAs, history) {
     if (persistHistoryAs) {
         sessionStorage.setItem(persistHistoryAs, JSON.stringify(history));
@@ -270,10 +288,10 @@ function createHistory() {
 }
 
 function loadClasses(classList, lastElem, elem, direction) {
-    elem.parentNode.classList.add(classList.parent);
-    lastElem.classList.add(classList.lastElem);
-    elem.classList.add(classList.newElem);
-    elem.classList.add(classList.direction.replace('<direction>', direction));
+    addClass(elem.parentNode, classList.parent);
+    addClass(lastElem, classList.lastElem);
+    addClass(elem, classList.newElem);
+    addClass(elem, classList.direction.replace('<direction>', direction));
 }
 
 function unloadClasses(classList, barrier, parentNode, elem, direction) {
@@ -281,9 +299,12 @@ function unloadClasses(classList, barrier, parentNode, elem, direction) {
     if (newBarrier > 0) {
         return newBarrier;
     }
-    elem.classList.remove(classList.newElem);
-    elem.classList.remove(classList.direction.replace('<direction>', direction));
-    elem.parentNode.classList.remove(classList.parent);
+    removeClass(elem, classList.newElem);
+    removeClass(elem, classList.direction.replace('<direction>', direction));
+
+    if (elem.parentNode) {
+        removeClass(elem.parentNode, classList.parent);
+    }
     return newBarrier;
 }
 
@@ -297,6 +318,7 @@ function config(key, elem, isInit, ctx) {
     if (!isInit) {
         (function () {
             var parentNode = elem.parentNode;
+
             var direction = 'next';
 
             if (_this.useHistory) {
@@ -321,13 +343,15 @@ function config(key, elem, isInit, ctx) {
             if (_this.last) {
                 (function () {
                     var lastElem = _this.last.elem;
+                    var id = 'mithril-transition-' + Date.now();
                     loadClasses(_this.classList, lastElem, elem, direction);
-
-                    parentNode.insertAdjacentElement('beforeend', lastElem);
+                    lastElem.dataset.transitionId = id;
+                    parentNode.insertAdjacentHTML('beforeend', lastElem.outerHTML);
+                    _this.last.elem = lastElem = parentNode.querySelector('[data-transition-id=' + id + ']');
 
                     var barrier = 2;
                     _this.anim(lastElem, elem, direction, function () {
-                        lastElem.remove();
+                        lastElem.parentNode.removeChild(lastElem);
                         barrier = unloadClasses(_this.classList, barrier, parentNode, elem, direction);
                     }, function () {
                         barrier = unloadClasses(_this.classList, barrier, parentNode, elem, direction);

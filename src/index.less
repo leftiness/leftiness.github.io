@@ -98,12 +98,16 @@ nav {
 }
 
 @keyframes swoosh {
-	from {
-		-webkit-transform: translateX(100%);
-		transform: translateX(100%);
+	0% {
+		opacity: 0.5;
+		left: 100%;
 	}
-	to {
-		-webkit-transform: translateX(-100%);
-		transform: translateX(-100%);
+	50% {
+		opacity: 1;
+		left: 0%;
+	}
+	100% {
+		opacity: 0;
+		left: -100%;
 	}
 }

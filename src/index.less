@@ -34,18 +34,45 @@ nav {
 }
 
 .outro {
-	-webkit-animation: scaleDown .2s ease both;
-	animation: scaleDown .2s ease both;
+	@media (max-width: 720px) {
+		-webkit-animation: noop 0s ease both;
+		animation: noop 0s ease both;
+	}
+	@media (min-width: 720px) {
+		-webkit-animation: scaleDown .2s ease both;
+		animation: scaleDown .2s ease both;
+	}
 }
 
 .intro {
-	-webkit-animation: moveFromBottomFade .2s ease both;
-	animation: moveFromBottomFade .2s ease both;
+	@media (max-width: 720px) {
+		-webkit-animation: noop 0s ease both;
+		animation: noop 0s ease both;
+	}
+	@media (min-width: 720px) {
+		-webkit-animation: moveFromBottomFade .2s ease both;
+		animation: moveFromBottomFade .2s ease both;
+	}
 }
 
 .swoosh {
-	-webkit-animation: swoosh .3s ease-in both;
-	animation: swoosh .3s ease-in both;
+	@media (max-width: 720px) {
+		display: none;
+	}
+	@media (min-width: 720px) {
+		-webkit-animation: swoosh .3s ease-in both;
+		animation: swoosh .3s ease-in both;
+	}
+}
+
+@keyframes noop {
+	from { opacity: 1 }
+	to { opacity: 1 }
+}
+
+@-webkit-keyframes noop {
+	from { opacity: 1 }
+	to { opacity: 1 }
 }
 
 @keyframes scaleDown {

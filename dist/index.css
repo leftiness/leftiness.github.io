@@ -31,17 +31,56 @@ nav {
   height: 50px;
   padding: 10px;
 }
-.outro {
-  -webkit-animation: scaleDown .2s ease both;
-  animation: scaleDown .2s ease both;
+@media (max-width: 720px) {
+  .outro {
+    -webkit-animation: noop 0s ease both;
+    animation: noop 0s ease both;
+  }
 }
-.intro {
-  -webkit-animation: moveFromBottomFade .2s ease both;
-  animation: moveFromBottomFade .2s ease both;
+@media (min-width: 720px) {
+  .outro {
+    -webkit-animation: scaleDown .2s ease both;
+    animation: scaleDown .2s ease both;
+  }
 }
-.swoosh {
-  -webkit-animation: swoosh 0.3s ease-in both;
-  animation: swoosh 0.3s ease-in both;
+@media (max-width: 720px) {
+  .intro {
+    -webkit-animation: noop 0s ease both;
+    animation: noop 0s ease both;
+  }
+}
+@media (min-width: 720px) {
+  .intro {
+    -webkit-animation: moveFromBottomFade .2s ease both;
+    animation: moveFromBottomFade .2s ease both;
+  }
+}
+@media (max-width: 720px) {
+  .swoosh {
+    display: none;
+  }
+}
+@media (min-width: 720px) {
+  .swoosh {
+    -webkit-animation: swoosh 0.4s ease-in both;
+    animation: swoosh 0.4s ease-in both;
+  }
+}
+@keyframes noop {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes noop {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes scaleDown {
   to {
@@ -63,12 +102,16 @@ nav {
   }
 }
 @keyframes swoosh {
-  from {
-    -webkit-transform: translateX(100%);
-    transform: translateX(100%);
+  0% {
+    opacity: 0.5;
+    left: 100%;
   }
-  to {
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
+  50% {
+    opacity: 1;
+    left: 0%;
+  }
+  100% {
+    opacity: 0;
+    left: -100%;
   }
 }

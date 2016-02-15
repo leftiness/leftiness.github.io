@@ -83,13 +83,75 @@ m.route(document.body, "/todo", {
 });
 
 
-},{"./common/index.coffee":3,"./components/index.coffee":5,"./modules/about/AboutModule.coffee":10,"./modules/todo/TodoModule.coffee":14,"infect":undefined,"mithril":undefined}],3:[function(require,module,exports){
+},{"./common/index.coffee":3,"./components/index.coffee":6,"./modules/about/AboutModule.coffee":11,"./modules/todo/TodoModule.coffee":15,"infect":undefined,"mithril":undefined}],3:[function(require,module,exports){
 module.exports = {
-  TransitionFactory: require("./services/TransitionFactory.coffee")
+  TransitionFactory: require("./services/TransitionFactory.coffee"),
+  SwooshStyleFactory: require("./services/SwooshStyleFactory.coffee")
 };
 
 
-},{"./services/TransitionFactory.coffee":4}],4:[function(require,module,exports){
+},{"./services/SwooshStyleFactory.coffee":4,"./services/TransitionFactory.coffee":5}],4:[function(require,module,exports){
+var Klass, deviation,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+deviation = function(min, delta) {
+  var max;
+  max = min + delta;
+  return Math.random() * (max - min) + min;
+};
+
+Klass = (function() {
+  function Klass() {
+    this.createAll = bind(this.createAll, this);
+    this.create = bind(this.create, this);
+  }
+
+  Klass.prototype.create = function(color, yPos, width, height, delay) {
+    var style;
+    return style = {
+      "width": width + "%",
+      "height": height + "px",
+      "background-color": "" + color,
+      "position": "absolute",
+      "top": yPos + "px",
+      "-webkit-animation-delay": delay + "s",
+      "animation-delay": delay + "s"
+    };
+  };
+
+  Klass.prototype.createAll = function() {
+    var array, color, colors, delay, delayDelta, delayMin, height, heightDelta, heightMin, i, j, lines, ref, width, widthDelta, widthMin, yDelta, yMin, yPos;
+    yMin = 100;
+    yDelta = 200;
+    heightMin = 10;
+    heightDelta = 50;
+    widthMin = 100;
+    widthDelta = 75;
+    lines = 10;
+    delayMin = 0;
+    delayDelta = 0.4;
+    colors = ["#9BCBF6", "#5FACF2", "#2792F2", "#0280F0"];
+    array = [];
+    for (i = j = 0, ref = lines; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+      color = (deviation(i, colors.length)) % colors.length;
+      color = i % colors.length;
+      yPos = deviation(yMin, yDelta);
+      width = deviation(widthMin, widthDelta);
+      height = deviation(heightMin, heightDelta);
+      delay = deviation(delayMin, delayDelta);
+      array.push(this.create(colors[color], yPos, width, height, delay));
+    }
+    return array;
+  };
+
+  return Klass;
+
+})();
+
+module.exports = new Klass();
+
+
+},{}],5:[function(require,module,exports){
 var Klass, doTransition, m,
   hasProp = {}.hasOwnProperty,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -173,14 +235,14 @@ Klass = (function() {
 module.exports = new Klass();
 
 
-},{"mithril":undefined}],5:[function(require,module,exports){
+},{"mithril":undefined}],6:[function(require,module,exports){
 module.exports = {
   NavigationModule: require("./navigation/NavigationModule.coffee"),
   SwooshModule: require("./swoosh/SwooshModule.coffee")
 };
 
 
-},{"./navigation/NavigationModule.coffee":6,"./swoosh/SwooshModule.coffee":8}],6:[function(require,module,exports){
+},{"./navigation/NavigationModule.coffee":7,"./swoosh/SwooshModule.coffee":9}],7:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -188,7 +250,7 @@ Module = require("../../Module.coffee");
 module.exports = new Module().view("NavigationView", require("./NavigationView.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./NavigationView.coffee":7}],7:[function(require,module,exports){
+},{"../../Module.coffee":1,"./NavigationView.coffee":8}],8:[function(require,module,exports){
 "use strict";
 var Klass, NavigationView, infect, m;
 
@@ -222,7 +284,7 @@ NavigationView.$infect = ["TransitionFactory"];
 module.exports = NavigationView;
 
 
-},{"infect":undefined,"mithril":undefined}],8:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],9:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -230,7 +292,7 @@ Module = require("../../Module.coffee");
 module.exports = new Module().view("SwooshView", require("./SwooshView.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./SwooshView.coffee":9}],9:[function(require,module,exports){
+},{"../../Module.coffee":1,"./SwooshView.coffee":10}],10:[function(require,module,exports){
 "use strict";
 var Klass, SwooshView, infect, m;
 
@@ -239,20 +301,14 @@ m = require("mithril");
 infect = require("infect");
 
 Klass = (function() {
-  function Klass(vm, Trans) {
+  function Klass(vm, Trans, Swoosh) {
     return function() {
-      var opts;
-      opts = {
-        style: {
-          "width": "100%",
-          "height": "100px",
-          "background-color": "#7FDBFF",
-          "position": "absolute",
-          "top": "200px"
-        },
-        config: Trans.swoosh()
-      };
-      return m("div", opts);
+      return m("div", Swoosh.createAll().map(function(each) {
+        return m("div", {
+          style: each,
+          config: Trans.swoosh()
+        });
+      }));
     };
   }
 
@@ -262,12 +318,12 @@ Klass = (function() {
 
 SwooshView = infect.func(Klass);
 
-SwooshView.$infect = ["TransitionFactory"];
+SwooshView.$infect = ["TransitionFactory", "SwooshStyleFactory"];
 
 module.exports = SwooshView;
 
 
-},{"infect":undefined,"mithril":undefined}],10:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],11:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -275,7 +331,7 @@ Module = require("../../Module.coffee");
 module.exports = new Module().view("AboutView", require("./AboutView.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./AboutView.coffee":11}],11:[function(require,module,exports){
+},{"../../Module.coffee":1,"./AboutView.coffee":12}],12:[function(require,module,exports){
 "use strict";
 var AboutView, Klass, infect, m;
 
@@ -308,14 +364,14 @@ AboutView.$infect = ["NavigationModule", "SwooshModule", "TransitionFactory"];
 module.exports = AboutView;
 
 
-},{"infect":undefined,"mithril":undefined}],12:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],13:[function(require,module,exports){
 "use strict";
 var TodoListModel;
 
 module.exports = TodoListModel = Array;
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 var TodoModel, m;
 
@@ -335,7 +391,7 @@ TodoModel = (function() {
 module.exports = TodoModel;
 
 
-},{"mithril":undefined}],14:[function(require,module,exports){
+},{"mithril":undefined}],15:[function(require,module,exports){
 var Module;
 
 Module = require("../../Module.coffee");
@@ -343,7 +399,7 @@ Module = require("../../Module.coffee");
 module.exports = new Module().viewModel("TodoViewModel", require("./TodoViewModel.coffee")).view("TodoView", require("./TodoView.coffee")).infect("TodoModel", require("./TodoModel.coffee")).infect("TodoListModel", require("./TodoListModel.coffee")).init();
 
 
-},{"../../Module.coffee":1,"./TodoListModel.coffee":12,"./TodoModel.coffee":13,"./TodoView.coffee":15,"./TodoViewModel.coffee":16}],15:[function(require,module,exports){
+},{"../../Module.coffee":1,"./TodoListModel.coffee":13,"./TodoModel.coffee":14,"./TodoView.coffee":16,"./TodoViewModel.coffee":17}],16:[function(require,module,exports){
 "use strict";
 var Klass, TodoView, infect, m;
 
@@ -397,7 +453,7 @@ TodoView.$infect = ["NavigationModule", "SwooshModule", "TransitionFactory"];
 module.exports = TodoView;
 
 
-},{"infect":undefined,"mithril":undefined}],16:[function(require,module,exports){
+},{"infect":undefined,"mithril":undefined}],17:[function(require,module,exports){
 "use strict";
 var Klass, TodoViewModel, infect, m,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };

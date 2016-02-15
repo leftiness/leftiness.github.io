@@ -4,21 +4,14 @@ m = require "mithril"
 infect = require "infect"
 
 class Klass
-	constructor: (vm, Trans) ->
+	constructor: (vm, Trans, Swoosh) ->
 		return ->
-			opts =
-				style:
-					"width": "100%"
-					"height": "100px"
-					"background-color": "#7FDBFF"
-					"position": "absolute"
-					"top": "200px";
-				config:
-					Trans.swoosh()
-			m "div", opts
+			m "div",
+				Swoosh.createAll().map (each) ->
+					m "div", style: each, config: Trans.swoosh()
 
 SwooshView = infect.func Klass
 
-SwooshView.$infect = [ "TransitionFactory" ]
+SwooshView.$infect = [ "TransitionFactory", "SwooshStyleFactory" ]
 
 module.exports = SwooshView
